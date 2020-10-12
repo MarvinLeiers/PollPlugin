@@ -8,3 +8,5 @@ website: www.marvinleiers.de
 commands:
   umfrage:
     permission: poll.admin
+  abstimmen:
+

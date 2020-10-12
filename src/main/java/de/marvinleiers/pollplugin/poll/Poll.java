@@ -1,6 +1,7 @@
 package de.marvinleiers.pollplugin.poll;
 
 import de.marvinleiers.pollplugin.utils.BossBar;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.boss.BarColor;
 import org.bukkit.entity.Player;
@@ -17,6 +18,7 @@ public class Poll
     public static HashMap<Player, Poll> pendingPolls = new HashMap<>();
 
     private final List<String> options;
+    private List<Vote> votes;
     private final String question;
     private final Player creator;
     private BossBar bossBar;
@@ -25,6 +27,7 @@ public class Poll
     public Poll(@NotNull String question, Player creator)
     {
         this.options = new ArrayList<>();
+        this.votes = new ArrayList<>();
         this.question = question;
         this.creator = creator;
         this.bossBar = null;
@@ -51,7 +54,7 @@ public class Poll
             started = true;
             pendingPolls.remove(creator);
 
-            bossBar = new BossBar(question, BarColor.BLUE);
+            bossBar = new BossBar(question, this, BarColor.BLUE);
             bossBar.createBossBar();
             bossBar.addAll();
 
@@ -62,10 +65,35 @@ public class Poll
         }
     }
 
+    public boolean vote(Vote vote)
+    {
+        boolean valid = false;
+
+        for (String option : options)
+        {
+            if (option.equals(vote.getOption()))
+            {
+                valid = true;
+                break;
+            }
+        }
+
+        if (!valid)
+            throw new UnsupportedOperationException(vote.getOption() + " is not valid for poll");
+
+        for (Vote v : votes)
+        {
+            if (v.getPlayer() == vote.getPlayer())
+                return false;
+        }
+
+        votes.add(vote);
+        return true;
+    }
+
     public void stop()
     {
-        activePoll = null;
-        bossBar.stop();
+        Bukkit.getOnlinePlayers().stream().forEach(player -> player.sendMessage("§aUmfrage ist beendet! Bitte nicht mehr abstimmen."));
     }
 
     private boolean isValid()

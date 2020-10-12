@@ -15,13 +15,15 @@ public class BossBar
     private org.bukkit.boss.BossBar bossBar;
     private BarColor color;
     private String title;
+    private Poll poll;
     private int taskID;
 
-    public BossBar(String title, BarColor color)
+    public BossBar(String title, Poll poll, BarColor color)
     {
         org.bukkit.boss.BossBar bossBar;
         this.title = title;
         this.color = color;
+        this.poll = poll;
         this.taskID = -1;
     }
 
@@ -49,9 +51,7 @@ public class BossBar
 
                 if (progress <= 0)
                 {
-                    Poll.setActivePoll(null);
-                    bossBar.setVisible(false);
-                    Bukkit.getScheduler().cancelTask(taskID);
+                    stop();
                 }
             }
         }, 0, 0);
@@ -59,6 +59,8 @@ public class BossBar
 
     public void stop()
     {
+        poll.stop();
+        Poll.setActivePoll(null);
         bossBar.setVisible(false);
         Bukkit.getScheduler().cancelTask(taskID);
     }
