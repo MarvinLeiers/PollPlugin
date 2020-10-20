@@ -3,6 +3,7 @@ package de.marvinleiers.pollplugin;
 import de.marvinleiers.menuapi.MenuAPI;
 import de.marvinleiers.pollplugin.commands.AdminCommand;
 import de.marvinleiers.pollplugin.commands.VoteCommand;
+import de.marvinleiers.pollplugin.data.DataClient;
 import de.marvinleiers.pollplugin.poll.Poll;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -18,6 +19,7 @@ public final class PollPlugin extends JavaPlugin implements Listener
     @Override
     public void onEnable()
     {
+        new DataClient(this);
         MenuAPI.setUp(this);
 
         this.getCommand("abstimmen").setExecutor(new VoteCommand());
