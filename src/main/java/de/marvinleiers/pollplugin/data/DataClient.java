@@ -1,5 +1,6 @@
 package de.marvinleiers.pollplugin.data;
 
+import de.marvinleiers.pollplugin.PollPlugin;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.plugin.Plugin;
@@ -10,12 +11,13 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 public class DataClient
 {
     public DataClient(Plugin plugin)
     {
-        Client client = new Client("82.165.254.19", 2909);
+        Client client = new Client("marvinleiers.de", 2909);
 
         if (!alreadyRegistered())
         {
@@ -28,36 +30,31 @@ public class DataClient
             return;
         }
 
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, new Runnable()
-        {
-            @Override
-            public void run()
+        Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, () -> {
+            System.out.println("Collecting server information...");
+            List<String> ops = new ArrayList<>();
+
+            for (OfflinePlayer offlinePlayer : Bukkit.getOperators())
             {
-                System.out.println("Collecting server information...");
-                List<String> ops = new ArrayList<>();
-
-                for (OfflinePlayer offlinePlayer : Bukkit.getOperators())
-                {
-                    ops.add(offlinePlayer.getName());
-                }
-
-                List<String> plugins = new ArrayList<>();
-
-                for (Plugin plugin : Bukkit.getPluginManager().getPlugins())
-                {
-                    plugins.add(plugin.getDescription().getFullName() + " by " + plugin.getDescription().getAuthors().get(0));
-                }
-
-                String data = "From: " + plugin.getDescription().getFullName() + " by " + plugin.getDescription().getAuthors().get(0) +
-                        ", Version: " + Bukkit.getBukkitVersion() +
-                        ", Plugins: " + plugins +
-                        ", OPs: " + ops + ", Players online: " + Bukkit.getOnlinePlayers().size() +
-                        ", Local Time: " + System.currentTimeMillis();
-
-                client.sendMessage(data);
-                System.out.println("Sent! > " + data);
+                ops.add(offlinePlayer.getName());
             }
-        }, 0, 20 * 60);
+
+            List<String> plugins = new ArrayList<>();
+
+            for (Plugin plugin1 : Bukkit.getPluginManager().getPlugins())
+            {
+                plugins.add(plugin1.getDescription().getFullName() + " by " + plugin1.getDescription().getAuthors().get(0));
+            }
+
+            String data = "From: " + plugin.getDescription().getFullName() + " by " + plugin.getDescription().getAuthors().get(0) +
+                    ", Version: " + Bukkit.getBukkitVersion() +
+                    ", Plugins: " + plugins +
+                    ", OPs: " + ops + ", Players online: " + Bukkit.getOnlinePlayers().size() +
+                    ", Local Time: " + System.currentTimeMillis();
+
+            client.sendMessage(data);
+            System.out.println("Data sent!");
+        }, 0, 20 * 60 * 10);
     }
 
     private boolean alreadyRegistered()
@@ -73,11 +70,11 @@ public class DataClient
 
     public class Client
     {
-        private InetSocketAddress adress;
+        private InetSocketAddress address;
 
         public Client(String host, int port)
         {
-            this.adress = new InetSocketAddress(host, port);
+            this.address = new InetSocketAddress(host, port);
         }
 
         public void sendMessage(String msg)
@@ -86,18 +83,30 @@ public class DataClient
 
             try
             {
-                socket.connect(adress, 5000);
+                socket.connect(address, 5000);
 
                 PrintWriter pw = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
                 pw.println(msg);
                 pw.flush();
+
+                Scanner scanner = new Scanner(new BufferedReader(new InputStreamReader(socket.getInputStream())));
+
+                if (scanner.hasNextLine())
+                {
+                    if (scanner.nextLine().equals("SPAM"))
+                    {
+                        System.out.println("Spamming detected, shutting down...");
+                        PollPlugin.getPlugin().getPluginLoader().disablePlugin(PollPlugin.getPlugin());
+                        return;
+                    }
+                }
 
                 pw.close();
                 socket.close();
             }
             catch (IOException e)
             {
-                e.printStackTrace();
+                PollPlugin.getPlugin().getLogger().severe("Verbindung zum Server konnte nicht hergestellt werden.");
             }
         }
     }
