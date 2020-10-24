@@ -32,6 +32,7 @@ public final class PollPlugin extends JavaPlugin implements Listener
     {
         if (Poll.getActivePoll() != null)
             Poll.getActivePoll().getBossBar().addPlayer(event.getPlayer());
+
     }
 
     public static PollPlugin getPlugin()

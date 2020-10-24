@@ -3,7 +3,6 @@ package de.marvinleiers.pollplugin.commands;
 import de.marvinleiers.menuapi.MenuAPI;
 import de.marvinleiers.pollplugin.menus.VoteMenu;
 import de.marvinleiers.pollplugin.poll.Poll;
-import de.marvinleiers.pollplugin.poll.Vote;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;

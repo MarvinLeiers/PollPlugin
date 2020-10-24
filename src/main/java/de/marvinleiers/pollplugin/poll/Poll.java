@@ -3,12 +3,15 @@ package de.marvinleiers.pollplugin.poll;
 import de.marvinleiers.pollplugin.utils.BossBar;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Sound;
 import org.bukkit.boss.BarColor;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -23,6 +26,7 @@ public class Poll
     private final Player creator;
     private BossBar bossBar;
     private boolean started;
+    private boolean resultReady;
 
     public Poll(@NotNull String question, Player creator)
     {
@@ -33,6 +37,7 @@ public class Poll
         this.bossBar = null;
 
         this.started = false;
+        this.resultReady = false;
     }
 
     public void addOption(@NotNull String option)
@@ -94,6 +99,32 @@ public class Poll
     public void stop()
     {
         Bukkit.getOnlinePlayers().stream().forEach(player -> player.sendMessage("§aUmfrage ist beendet! Bitte nicht mehr abstimmen."));
+        this.calculateVotes();
+    }
+
+    private void calculateVotes()
+    {
+        int[] res = new int[options.size()];
+
+        for (Vote vote : votes)
+            res[getOptionPosition(vote)] += 1;
+
+        creator.playSound(creator.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
+        creator.sendMessage("§9" + getQuestion());
+
+        for (int i = 0; i < res.length; i++)
+            creator.sendMessage("§7- " + options.get(i) + " §b§l" + new DecimalFormat("##").format((res[i] / votes.size() * 100)) + "% §b(" + res[i] + ")");
+    }
+
+    private int getOptionPosition(Vote vote)
+    {
+        for (int i = 0; i < options.size(); i++)
+        {
+            if (options.get(i).equals(vote.getOption()))
+                return i;
+        }
+
+        return -1;
     }
 
     private boolean isValid()

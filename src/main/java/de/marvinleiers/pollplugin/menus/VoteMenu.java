@@ -54,9 +54,24 @@ public class VoteMenu extends Menu
     {
         ItemStack item = inventoryClickEvent.getCurrentItem();
 
+        if (item == null)
+            return;
+
         Vote vote = new Vote(poll, item.getItemMeta().getDisplayName(), player);
 
-        if (poll.vote(vote))
+        boolean result = false;
+
+        try
+        {
+            result = poll.vote(vote);
+        }
+        catch (UnsupportedOperationException e)
+        {
+            player.sendMessage("§cGlückwunsch, du hast einen Bug gefunden! Melde diesen bitte an das Serverteam (Plugin: §4§lPollPlugin by Marvin2k0)");
+            return;
+        }
+
+        if (result)
             player.sendMessage("§aDu hast erfolgreich abgestimmt!");
         else
             player.sendMessage("§cHuch... da ist etwas schief gegangen!");
