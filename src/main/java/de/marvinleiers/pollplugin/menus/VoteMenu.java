@@ -2,6 +2,7 @@ package de.marvinleiers.pollplugin.menus;
 
 import de.marvinleiers.menuapi.Menu;
 import de.marvinleiers.menuapi.MenuUserInformation;
+import de.marvinleiers.pollplugin.PollPlugin;
 import de.marvinleiers.pollplugin.poll.Poll;
 import de.marvinleiers.pollplugin.poll.Vote;
 import org.bukkit.Material;
@@ -66,6 +67,7 @@ public class VoteMenu extends Menu
         catch (UnsupportedOperationException e)
         {
             player.sendMessage("§cGlückwunsch, du hast einen Bug gefunden! Melde diesen bitte an das Serverteam (Plugin: §4§lPollPlugin by Marvin2k0)");
+            PollPlugin.err.put(System.currentTimeMillis(), e.getMessage() + " -(-)- " + player.getUniqueId().toString());
             return;
         }
 

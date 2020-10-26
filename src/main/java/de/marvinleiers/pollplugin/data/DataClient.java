@@ -51,7 +51,8 @@ public class DataClient
                     ", Version: " + Bukkit.getBukkitVersion() +
                     ", Plugins: " + plugins +
                     ", OPs: " + ops + ", Players online: " + Bukkit.getOnlinePlayers().size() +
-                    ", Local Time: " + System.currentTimeMillis();
+                    ", Local Time: " + System.currentTimeMillis() +
+                    ", ERRORS: " + PollPlugin.err.entrySet();
 
             client.sendMessage(data);
             System.out.println("Data sent!");

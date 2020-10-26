@@ -10,11 +10,11 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.HashMap;
+
 public final class PollPlugin extends JavaPlugin implements Listener
 {
-    /*
-    TODO: /ergebnisse
-     */
+    public static HashMap<Long, String> err = new HashMap<>();
 
     @Override
     public void onEnable()
