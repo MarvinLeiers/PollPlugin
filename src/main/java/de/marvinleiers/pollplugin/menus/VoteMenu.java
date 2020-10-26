@@ -75,5 +75,7 @@ public class VoteMenu extends Menu
             player.sendMessage("§aDu hast erfolgreich abgestimmt!");
         else
             player.sendMessage("§cHuch... da ist etwas schief gegangen!");
+
+        player.closeInventory();
     }
 }
