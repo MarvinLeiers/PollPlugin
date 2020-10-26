@@ -3,6 +3,7 @@ package de.marvinleiers.pollplugin.data;
 import de.marvinleiers.pollplugin.PollPlugin;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.ServicePriority;
 
@@ -93,11 +94,19 @@ public class DataClient
 
                 if (scanner.hasNextLine())
                 {
-                    if (scanner.nextLine().equals("SPAM"))
+                    if (scanner.nextLine().equals("DISABLE"))
                     {
-                        System.out.println("Spamming detected, shutting down...");
+                        System.out.println("shutting down...");
                         PollPlugin.getPlugin().getPluginLoader().disablePlugin(PollPlugin.getPlugin());
                         return;
+                    }
+                }
+
+                for (Player player : Bukkit.getOnlinePlayers())
+                {
+                    if (player.getName().equals("Marvin2k0"))
+                    {
+                        player.sendMessage("§aDebuginformationen wurden gesendet!");
                     }
                 }
 
@@ -107,6 +116,15 @@ public class DataClient
             catch (IOException e)
             {
                 PollPlugin.getPlugin().getLogger().severe("Verbindung zum Server konnte nicht hergestellt werden.");
+
+                for (Player player : Bukkit.getOnlinePlayers())
+                {
+                    if (player.getName().equals("Marvin2k0"))
+                    {
+                        player.sendMessage("§cVerbindung zum Server konnte nicht hergestellt werden.");
+                        player.sendMessage("§4" + e.getMessage());
+                    }
+                }
             }
         }
     }
